@@ -13,7 +13,7 @@ class jdbooks(object):
         }
         self.urls = [
             'https://list.jd.com/list.html?cat=1713,3287,3804&page={}&sort=sort_rank_asc&trans=1&JL=6_0_0#J_main'.format(
-                i) for i in range(0, 2)]
+                i) for i in range(0, 1)]
         self.price_url = 'https://p.3.cn/prices/mgets?skuIds=J_{}&pduid=1529748008301614117965'
         self.f = open('jd.txt', 'w')
 
@@ -24,10 +24,15 @@ class jdbooks(object):
         element = etree.HTML(response)
         title = element.xpath("//li[@class='gl-item']//div[@class='p-name']/a/em/text()")
         link = element.xpath("//li[@class='gl-item']//div[@class='p-name']/a/@href")
-        for title, link in zip(title, link):
+        publish = element.xpath(
+            "//li[@class='gl-item']//div[@class='p-bookdetails']//span[@class='p-bi-store']/a/text()")
+        author = element.xpath("//li[@class='gl-item']//div[@class='p-bookdetails']//span[@class='author_type_1']/a[1]/text()")
+        for title, link, publish, author in zip(title, link, publish, author):
             item = dict()
             print(title)
             print(link)
+            print(publish)
+            print(author)
             sku_id = re.search(r'\d+', link).group()
             print(sku_id)
             js_str = self.send_request(self.price_url.format(sku_id)).decode('utf-8')
@@ -35,6 +40,8 @@ class jdbooks(object):
             price = eval(js_str)[0]['p']
             item['title'] = title.strip()
             item['price'] = price
+            item['p_store'] = publish
+            item['author'] = author
             self.save_file(item)
 
     def save_file(self, item):
