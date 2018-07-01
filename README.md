@@ -42,5 +42,5 @@ import numpy as np
 datas=pd.read_json('jd.json',orient="records", lines=True)
 datas
 ```
-![jddatas]($res/jddatas.png)
+![jddatas](images/jddatas.png)
 
